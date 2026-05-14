@@ -1,0 +1,132 @@
+table DateTable
+	lineageTag: 70e602f8-6eb7-411a-8eff-976d2bcadaec
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: General Date
+		lineageTag: 9085d01a-5a2f-4f72-99c6-37e957ae7a9c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		formatString: 0
+		lineageTag: 28999cda-a56f-4f8b-aeee-98d1292ecc02
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quarter
+		lineageTag: 09e27280-bd4e-4e2d-b6ff-f9d2197cd2b7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Number'
+		formatString: 0
+		lineageTag: f174816d-11b2-4cb5-824a-47cac5de381f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Name'
+		lineageTag: e01ed059-ee98-4b32-b925-12c3d96f6b00
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Short'
+		lineageTag: 7bb570e8-b742-4770-b1a3-b4d9769036f1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Short]
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month'
+		lineageTag: 8fac32d8-16bf-4419-91fb-b6dbd0a87121
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Year Month Sort'
+		formatString: 0
+		lineageTag: 72a4bdc6-5aad-41bc-81fd-be3e56721a4d
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year Month Sort]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Month'
+		formatString: 0
+		lineageTag: fb3cb3db-7c1d-4c19-b858-d40a2061acf1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day of Month]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day of Week Number'
+		formatString: 0
+		lineageTag: fea4076a-4052-40d0-a1ec-927c1062ed6c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day of Week Number]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Name'
+		lineageTag: e14da8ea-b57b-473c-9b11-99b4a7d1c5aa
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day Name]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Day Short'
+		lineageTag: 76a50f9a-636f-40d0-8030-d498cc84eb41
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Day Short]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DateTable = calculated
+		mode: import
+		source =
+				
+				VAR MinYear = YEAR(MIN(RetailSales[TransactionDate]))
+				VAR MaxYear = YEAR(MAX(RetailSales[TransactionDate]))
+				RETURN
+				ADDCOLUMNS (
+				    CALENDAR ( DATE(MinYear, 1, 1), DATE(MaxYear, 12, 31) ),
+				    "Year", YEAR([Date]),
+				    "Quarter", "Q" & FORMAT([Date], "Q"),
+				    "Month Number", MONTH([Date]),
+				    "Month Name", FORMAT([Date], "MMMM"),
+				    "Month Short", FORMAT([Date], "MMM"),
+				    "Year Month", FORMAT([Date], "MMM YYYY"),
+				    "Year Month Sort", YEAR([Date]) * 100 + MONTH([Date]),
+				    "Day of Month", DAY([Date]),
+				    "Day of Week Number", WEEKDAY([Date], 2), -- 2 sets Monday as Day 1
+				    "Day Name", FORMAT([Date], "dddd"),
+				    "Day Short", FORMAT([Date], "ddd")
+				)
+
+	annotation PBI_Id = 7f7957356ea745d7b7a99ba90e514512
+

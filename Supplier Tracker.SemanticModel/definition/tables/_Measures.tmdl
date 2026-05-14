@@ -1,0 +1,81 @@
+table _Measures
+	lineageTag: fcc3ac05-daea-4350-b9d9-8873f027423c
+
+	measure 'Gross Revenue' =
+			
+			SUM(RetailSales[TotalAmount])
+		lineageTag: f2df6f33-7c6a-4211-b0a1-53a3f06802b3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Net Revenue' =
+			
+			SUM(RetailSales[FinalAmount])
+		lineageTag: 23664808-a474-47fc-a35c-a929fd67e6af
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Discounts' =
+			
+			SUM(RetailSales[DiscountAmount])
+		lineageTag: c7ec59ac-3ff4-4a82-9cb5-7ab1237a715a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Units Sold' =
+			
+			SUM(RetailSales[Quantity])
+		formatString: 0
+		lineageTag: caede05e-6a92-4ed8-b3d5-26e675ce4914
+
+	measure 'Adjusted Net Revenue' =
+			
+			CALCULATE(
+			    SUM(RetailSales[FinalAmount]),
+			    RetailSales[FinalAmount] >= 0
+			)
+		lineageTag: 2d3e3b18-e854-4398-984a-e0604987619e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Discount Rate %' = ```
+			
+			DIVIDE(
+			    [Total Discounts], 
+			    [Gross Revenue], 
+			    0
+			)
+			```
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 6d3eace5-17b9-41be-b14e-b79264bd1ef7
+
+	measure 'Average Item Price' =
+			
+			AVERAGE(RetailSales[UnitPrice])
+		lineageTag: f529d5a9-48bf-4b52-9dff-0578a3961a7e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Total Loyalty Points Issued' =
+			
+			SUM(RetailSales[LoyaltyPoints])
+		formatString: 0
+		lineageTag: 5c56341a-4bca-4c23-a2ca-af23b950a4a3
+
+	measure 'Avg Order Value' = DIVIDE([Net Revenue],[Total Units Sold],0)
+		lineageTag: 1ff10bde-c882-4404-94d2-8b61d01f7c12
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+

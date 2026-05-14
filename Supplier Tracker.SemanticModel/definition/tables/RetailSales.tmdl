@@ -1,0 +1,136 @@
+table RetailSales
+	lineageTag: 855fe3e9-2b35-4cfd-a7bc-4dc52a112cd8
+
+	column RecordID
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a4d1119-8706-4bdc-b6db-bb71c88181a9
+		summarizeBy: count
+		sourceColumn: RecordID
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerID
+		dataType: string
+		lineageTag: fd8d4f80-94ab-4907-bf4a-5d7250d90b08
+		summarizeBy: none
+		sourceColumn: CustomerID
+
+		annotation SummarizationSetBy = Automatic
+
+	column StoreName
+		dataType: string
+		lineageTag: eba9f09a-c349-41f0-a631-5d98c2137462
+		summarizeBy: none
+		sourceColumn: StoreName
+
+		annotation SummarizationSetBy = Automatic
+
+	column TransactionDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 57865baf-e78b-4dbf-898c-d824e7e3f302
+		summarizeBy: none
+		sourceColumn: TransactionDate
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Aisle
+		dataType: string
+		lineageTag: e43e2c0f-17fe-406e-a77c-27da850966a7
+		summarizeBy: none
+		sourceColumn: Aisle
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		lineageTag: 90d7ed9a-158a-4201-be08-10f3ef11ebfa
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 3531b1e0-e032-4b2a-8c0d-9c8ed56a7a2e
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPrice
+		dataType: double
+		lineageTag: 589c0f58-5f9d-493e-85f1-c1b2b7d02f4f
+		summarizeBy: sum
+		sourceColumn: UnitPrice
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TotalAmount
+		dataType: double
+		lineageTag: 845a853b-42f0-481a-9131-03a18bce84a3
+		summarizeBy: sum
+		sourceColumn: TotalAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column DiscountAmount
+		dataType: double
+		lineageTag: f17d8db6-ed0e-4611-b772-581e06d4bb9c
+		summarizeBy: sum
+		sourceColumn: DiscountAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column FinalAmount
+		dataType: double
+		lineageTag: 97d7bf96-17a9-49f2-a405-e437fcda180c
+		summarizeBy: sum
+		sourceColumn: FinalAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column LoyaltyPoints
+		dataType: int64
+		formatString: 0
+		lineageTag: 7ab7a066-214f-410b-979c-d61d2f0512f7
+		summarizeBy: sum
+		sourceColumn: LoyaltyPoints
+
+		annotation SummarizationSetBy = Automatic
+
+	column UploadedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c719d1f6-f0cd-4e30-935f-fb71fc98e295
+		summarizeBy: none
+		sourceColumn: UploadedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	partition RetailSales = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Databases("retail-srv.database.windows.net"),
+				    #"retail-sales-db" = Source{[Name="retail-sales-db"]}[Data],
+				    dbo_RetailSales = #"retail-sales-db"{[Schema="dbo",Item="RetailSales"]}[Data]
+				in
+				    dbo_RetailSales
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

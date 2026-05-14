@@ -1,0 +1,4 @@
+relationship c23da76c-6e4a-f03d-17c1-a8752c64faad
+	fromColumn: RetailSales.TransactionDate
+	toColumn: DateTable.Date
+

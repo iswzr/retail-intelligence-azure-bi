@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Supplier Tracker"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e00ff0bf-454d-4633-8bb7-f602e88e1386"
+  }
+}
