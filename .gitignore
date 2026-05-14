@@ -1,6 +1,5 @@
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
 # Ignore raw data files
-grocery_chain_data.csv
 grocery_chain_data.json
 grocery_chain_data.xlsx
