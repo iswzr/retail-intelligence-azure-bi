@@ -1,0 +1,467 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "retail-cdf"
+        },
+        "LinkedService_ADLS_accountKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'accountKey' of 'LinkedService_ADLS'"
+        },
+        "LinkedService_SQL_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LinkedService_SQL'"
+        },
+        "LinkedService_ADLS_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://retaildata55.dfs.core.windows.net/"
+        },
+        "LinkedService_SQL_properties_typeProperties_server": {
+            "type": "string",
+            "defaultValue": "retail-srv.database.windows.net"
+        },
+        "LinkedService_SQL_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "retail-sales-db"
+        },
+        "LinkedService_SQL_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "retailadmin"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/LoadRetailData')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Copy_99u",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [
+                            {
+                                "name": "Source",
+                                "value": "raw-data//grocery_chain_data.csv"
+                            },
+                            {
+                                "name": "Destination",
+                                "value": "dbo.RetailSales"
+                            }
+                        ],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings",
+                                    "skipLineCount": 0
+                                }
+                            },
+                            "sink": {
+                                "type": "AzureSqlSink"
+                            },
+                            "enableStaging": false,
+                            "validateDataConsistency": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "customer_id",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "CustomerID",
+                                            "type": "String",
+                                            "physicalType": "varchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "store_name",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "StoreName",
+                                            "type": "String",
+                                            "physicalType": "varchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "transaction_date",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TransactionDate",
+                                            "type": "DateTime",
+                                            "physicalType": "date"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "aisle",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "Aisle",
+                                            "type": "String",
+                                            "physicalType": "varchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "product_name",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "ProductName",
+                                            "type": "String",
+                                            "physicalType": "varchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "quantity",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "Quantity",
+                                            "type": "Int32",
+                                            "physicalType": "int"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "unit_price",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "UnitPrice",
+                                            "type": "Decimal",
+                                            "physicalType": "decimal"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "total_amount",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TotalAmount",
+                                            "type": "Decimal",
+                                            "physicalType": "decimal"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "discount_amount",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "DiscountAmount",
+                                            "type": "Decimal",
+                                            "physicalType": "decimal"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "final_amount",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "FinalAmount",
+                                            "type": "Decimal",
+                                            "physicalType": "decimal"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "loyalty_points",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "LoyaltyPoints",
+                                            "type": "Int32",
+                                            "physicalType": "int"
+                                        }
+                                    }
+                                ],
+                                "typeConversion": true,
+                                "typeConversionSettings": {
+                                    "allowDataTruncation": true,
+                                    "treatBooleanAsNumber": false
+                                }
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "SourceDataset_99u",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "DestinationDataset_99u",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2026-05-14T12:07:52Z"
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/SourceDataset_99u')]",
+                "[concat(variables('factoryId'), '/datasets/DestinationDataset_99u')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SourceDataset_99u')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LinkedService_ADLS",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "grocery_chain_data.csv",
+                        "fileSystem": "raw-data"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "customer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "store_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "aisle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "product_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "quantity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "unit_price",
+                        "type": "String"
+                    },
+                    {
+                        "name": "total_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "discount_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "final_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "loyalty_points",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LinkedService_ADLS')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DestinationDataset_99u')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LinkedService_SQL",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "RecordID",
+                        "type": "int",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CustomerID",
+                        "type": "varchar",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "StoreName",
+                        "type": "varchar",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TransactionDate",
+                        "type": "date",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "Aisle",
+                        "type": "varchar",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ProductName",
+                        "type": "varchar",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "UploadedAt",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "Quantity",
+                        "type": "int",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "UnitPrice",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TotalAmount",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "DiscountAmount",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "FinalAmount",
+                        "type": "decimal",
+                        "precision": 10,
+                        "scale": 2
+                    },
+                    {
+                        "name": "LoyaltyPoints",
+                        "type": "int",
+                        "precision": 10,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "RetailSales"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/LinkedService_SQL')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LinkedService_ADLS')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('LinkedService_ADLS_properties_typeProperties_url')]",
+                    "accountKey": {
+                        "type": "SecureString",
+                        "value": "[parameters('LinkedService_ADLS_accountKey')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LinkedService_SQL')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "server": "[parameters('LinkedService_SQL_properties_typeProperties_server')]",
+                    "database": "[parameters('LinkedService_SQL_properties_typeProperties_database')]",
+                    "encrypt": "mandatory",
+                    "trustServerCertificate": false,
+                    "authenticationType": "SQL",
+                    "userName": "[parameters('LinkedService_SQL_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('LinkedService_SQL_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
